@@ -1,0 +1,97 @@
+---
+import config from "@/config/config.json";
+import Base from "@/layouts/Base.astro";
+import { markdownify } from "@/lib/utils/textConverter";
+import type { CollectionEntry } from "astro:content";
+import { getEntry, render } from "astro:content";
+
+const contact = (await getEntry(
+  "contact",
+  "-index"
+)) as CollectionEntry<"contact">;
+const { contact_form_action }: { contact_form_action: string } = config.params;
+const { title, description, meta_title } = contact.data;
+const { Content } = await render(contact);
+---
+
+<Base
+  title={title}
+  meta_title={meta_title}
+  description={description}
+  keywords="contatta Technical Project Manager Roma, consulenza AWS, consulenza PMO Agile, Digital Transformation freelance"
+>
+  <section class="section pt-[72px]">
+    <div class="container">
+      <div class="row">
+        <div class="mx-auto lg:col-8">
+          <div class="content">
+            <Content />
+          </div>
+          <div class="mt-12 pt-12 border-t border-border">
+            <h3
+              set:html={markdownify("Inviami un messaggio")}
+              class="h5 font-normal text-3xl"
+            />
+            <p class="mt-2 text-base opacity-70">
+              Compila il form e ti rispondo entro 24 ore.
+            </p>
+            <form
+              class="contact-form mt-8"
+              action={contact_form_action}
+              method="POST"
+            >
+              <div class="row mb-6">
+                <div class="md:col-6">
+                  <label class="mb-2 block" for="name"> Nome e Cognome </label>
+                  <input
+                    class="form-input w-full"
+                    id="name"
+                    name="name"
+                    type="text"
+                    placeholder="Mario Rossi"
+                    required
+                  />
+                </div>
+                <div class="mt-6 md:mt-0 md:col-6">
+                  <label class="mb-2 block" for="email"> Email </label>
+                  <input
+                    class="form-input w-full"
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder="mario@azienda.it"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="mb-6">
+                <label class="mb-2 block" for="subject"> Oggetto </label>
+                <input
+                  class="form-input w-full"
+                  id="subject"
+                  name="subject"
+                  type="text"
+                  placeholder="Es. Migrazione AWS, PMO per progetto IoT, Consulenza AI..."
+                  required
+                />
+              </div>
+              <div class="mb-8">
+                <label class="mb-2 block" for="message"> Messaggio </label>
+                <textarea
+                  class="form-textarea w-full"
+                  id="message"
+                  name="message"
+                  rows="6"
+                  placeholder="Descrivimi brevemente il tuo progetto, le tecnologie coinvolte e le tempistiche..."
+                ></textarea>
+              </div>
+              <button class="btn btn-primary cursor-pointer rounded text-sm">
+                Invia Messaggio
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>

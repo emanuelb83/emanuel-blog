@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir \"%TEMP%\" /od /b)",
+      "Bash(findstr /i '.jpg .jpeg .png .webp')",
+      "Bash(grep -iE \"\\\\.\\(jpg|jpeg|png|webp\\)$\")"
+    ]
+  }
+}

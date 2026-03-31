@@ -1,0 +1,19 @@
+{
+  "main": [
+    {
+      "name": "linkedin",
+      "icon": "FaLinkedin",
+      "link": "https://www.linkedin.com/in/emanuelbernardini"
+    },
+    {
+      "name": "github",
+      "icon": "FaGithub",
+      "link": "https://www.github.com/emanuelbernardini"
+    },
+    {
+      "name": "twitter",
+      "icon": "FaXTwitter",
+      "link": "https://x.com/emanuelbernardini"
+    }
+  ]
+}

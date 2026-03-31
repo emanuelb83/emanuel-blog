@@ -1,0 +1,38 @@
+{
+  "site": {
+    "title": "Emanuel Bernardini | Technical Project Manager",
+    "base_url": "https://emanuelbernardini.dev",
+    "base_path": "/",
+    "trailing_slash": false,
+    "favicon": "/images/emanuel.jpg"
+  },
+
+  "settings": {
+    "pagination": 6,
+    "summary_length": 200
+  },
+
+  "profile": {
+    "name": "Emanuel Bernardini",
+    "image": "/images/emanuel.jpg",
+    "designation": "Technical Project Manager | PMO & Cloud Architect",
+    "bio": "Technical Project Manager focalizzato nel colmare il divario tra stakeholder aziendali e team tecnici. Specializzato nella consegna di progetti complessi di Digital Transformation, AI e IoT — dall'architettura AWS alla specifica tecnica, fino al go-live e alla manutenzione. Conformità GDPR e security-by-design integrati in ogni fase del ciclo di vita del prodotto."
+  },
+
+  "params": {
+    "contact_form_action": "https://formspree.io/f/xpqorplg",
+    "copyright": "Copyright © 2026 Emanuel Bernardini"
+  },
+
+  "disqus": {
+    "enable": false,
+    "shortname": "",
+    "settings": {}
+  },
+
+  "metadata": {
+    "meta_author": "Emanuel Bernardini",
+    "meta_image": "/images/og-image.png",
+    "meta_description": "Technical Project Manager e Cloud Architect appassionato di AWS, AI, IoT e PMO. Specializzato in Digital Transformation, Terraform IaC e Agile delivery — Roma, Italia."
+  }
+}
