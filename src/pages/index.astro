@@ -7,6 +7,14 @@ import Base from "@/layouts/Base.astro";
 import { markdownify } from "@/lib/utils/textConverter";
 
 const { name, image, designation, bio } = config.profile;
+
+const skills = [
+  { label: "AWS & Terraform",    href: "/categories/cloud-architecture" },
+  { label: "AI & Automation", href: "/categories/ai-automation" },
+  { label: "IoT & Edge",         href: "/categories/iot-edge" },
+  { label: "PMO & Agile",        href: "/categories/pmo-strategy" },
+  { label: "GDPR & Security",    href: "/blog" },
+];
 ---
 
 <Base
@@ -20,45 +28,53 @@ const { name, image, designation, bio } = config.profile;
         <div class="mx-auto text-center lg:col-8">
 
           {/* Foto profilo */}
-          <ImageMod
-            class="mx-auto rounded-full"
-            src={image}
-            width={220}
-            height={220}
-            alt={name}
-            loading="eager"
-            fit="contain"
-          />
+          <div class="hero-photo">
+            <ImageMod
+              class="mx-auto rounded-full"
+              src={image}
+              width={220}
+              height={220}
+              alt={name}
+              loading="eager"
+              fit="contain"
+            />
+          </div>
 
           {/* Nome */}
           <h1
             set:html={markdownify(name)}
-            class="mt-12 text-6xl lg:text-8xl font-semibold"
+            class="hero-name mt-12 text-6xl lg:text-8xl font-semibold"
           />
 
           {/* Designation */}
           <p
             set:html={markdownify(designation)}
-            class="mt-6 text-primary text-xl"
+            class="hero-designation mt-6 text-primary text-xl"
           />
 
           {/* Bio */}
-          <p set:html={markdownify(bio)} class="mt-4 leading-9 text-xl" />
+          <p set:html={markdownify(bio)} class="hero-bio mt-4 leading-9 text-xl" />
 
           {/* Social */}
-          <Social source={social.main} className="social-icons mt-8" />
+          <div class="hero-social">
+            <Social source={social.main} className="social-icons mt-8" />
+          </div>
 
-          {/* Badge competenze */}
-          <div class="mt-8 flex flex-wrap justify-center gap-2">
-            {["AWS & Terraform", "AI / Computer Vision", "IoT & Edge", "PMO & Agile", "GDPR & Security"].map((skill) => (
-              <span class="rounded-full border border-primary/40 px-4 py-1 text-sm text-primary">
-                {skill}
-              </span>
+          {/* Badge competenze → link alle categorie */}
+          <div class="hero-badges mt-8 flex flex-wrap justify-center gap-2">
+            {skills.map((skill, i) => (
+              <a
+                href={skill.href}
+                class="badge-item rounded-full border border-primary/40 px-4 py-1 text-sm text-primary no-underline"
+                style={`--i: ${i}`}
+              >
+                {skill.label}
+              </a>
             ))}
           </div>
 
           {/* CTA */}
-          <div class="mt-12 flex flex-wrap justify-center gap-4">
+          <div class="hero-cta mt-12 flex flex-wrap justify-center gap-4">
             <a
               href="/blog"
               class="btn btn-primary rounded px-8 py-3 text-sm font-medium"
@@ -78,3 +94,149 @@ const { name, image, designation, bio } = config.profile;
     </div>
   </div>
 </Base>
+
+<style>
+  /* ── Keyframes ─────────────────────────────────────── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0);    }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  @keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.88); }
+    to   { opacity: 1; transform: scale(1);    }
+  }
+
+  /* ── Base: elementi invisibili finché non animati ──── */
+  .hero-photo,
+  .hero-name,
+  .hero-designation,
+  .hero-bio,
+  .hero-social,
+  .badge-item,
+  .hero-cta {
+    opacity: 0;
+    animation-fill-mode: both;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    animation-duration: 0.7s;
+  }
+
+  /* ── Sequenza a cascata ────────────────────────────── */
+  .hero-photo        { animation-name: scaleIn; animation-delay: 0ms;  }
+  .hero-name         { animation-name: fadeUp;  animation-delay: 180ms; }
+  .hero-designation  { animation-name: fadeUp;  animation-delay: 320ms; }
+  .hero-bio          { animation-name: fadeIn;  animation-delay: 440ms; animation-duration: 0.9s; }
+  .hero-social       { animation-name: fadeIn;  animation-delay: 560ms; }
+
+  /* Badge: stagger tramite custom property --i */
+  .badge-item {
+    animation-name: fadeUp;
+    animation-duration: 0.5s;
+    animation-delay: calc(650ms + var(--i) * 80ms);
+  }
+
+  .hero-cta {
+    animation-name: fadeUp;
+    animation-delay: calc(650ms + 5 * 80ms + 60ms);
+  }
+
+  /* ── Micro-interactions hover ─────────────────────── */
+
+  /* Foto: leggero zoom al hover */
+  .hero-photo img {
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 0.4s ease;
+  }
+  .hero-photo img:hover {
+    transform: scale(1.04);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-primary) 25%, transparent);
+  }
+
+  /* Badge: scale + background fill al hover */
+  .badge-item {
+    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+                background-color 0.25s ease,
+                color 0.25s ease;
+    cursor: pointer;
+  }
+  .badge-item:hover {
+    transform: scale(1.07);
+    background-color: color-mix(in srgb, var(--color-primary) 15%, transparent);
+    color: #fff;
+  }
+
+  /* CTA primario: shimmer effect al hover */
+  .hero-cta a:first-child {
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 0.25s ease;
+  }
+  .hero-cta a:first-child::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      105deg,
+      transparent 40%,
+      rgba(255, 255, 255, 0.18) 50%,
+      transparent 60%
+    );
+    transform: translateX(-100%);
+    transition: transform 0.5s ease;
+  }
+  .hero-cta a:first-child:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px color-mix(in srgb, var(--color-primary) 30%, transparent);
+  }
+  .hero-cta a:first-child:hover::after {
+    transform: translateX(100%);
+  }
+
+  /* CTA secondario: fill al hover */
+  .hero-cta a:last-child {
+    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+                background-color 0.25s ease,
+                color 0.25s ease;
+  }
+  .hero-cta a:last-child:hover {
+    transform: translateY(-2px);
+    background-color: color-mix(in srgb, var(--color-primary) 12%, transparent);
+    color: #fff;
+  }
+
+  /* Social icons: già gestite da .social-icons in components.css,
+     aggiungiamo solo un leggero lift */
+  .hero-social :global(a) {
+    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1) !important;
+  }
+  .hero-social :global(a:hover) {
+    transform: translateY(-3px) scale(1.15) !important;
+  }
+
+  /* ── Rispetta preferenza utente per meno animazioni ── */
+  @media (prefers-reduced-motion: reduce) {
+    .hero-photo,
+    .hero-name,
+    .hero-designation,
+    .hero-bio,
+    .hero-social,
+    .badge-item,
+    .hero-cta {
+      animation: none;
+      opacity: 1;
+    }
+    .hero-photo img,
+    .badge-item,
+    .hero-cta a:first-child,
+    .hero-cta a:last-child,
+    .hero-social :global(a) {
+      transition: none !important;
+    }
+  }
+</style>
