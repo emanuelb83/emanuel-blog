@@ -1,0 +1,57 @@
+---
+import Pagination from "@/components/Pagination.astro";
+import Post from "@/components/Post.astro";
+import config from "@/config/config.json";
+import Base from "@/layouts/Base.astro";
+import { getSinglePage } from "@/lib/contentParser.astro";
+import { sortByDate } from "@/lib/utils/sortFunctions";
+
+const posts = await getSinglePage("posts");
+const { pagination } = config.settings;
+const sortPostByDate = sortByDate(posts);
+---
+
+<Base
+  meta_title="Blog | Emanuel Bernardini — AWS, AI, IoT & PMO"
+  description="Articoli tecnici su Cloud Architecture, AI Automation, IoT Edge Computing e PMO Strategy. Insights da 12 anni di Digital Transformation."
+  keywords="blog technical project manager, AWS architecture articles, IoT edge computing blog, AI automation insights, PMO strategy agile"
+>
+  <div class="section pt-[72px]">
+    <div class="container">
+
+      {/* Page header */}
+      <div class="row mb-12">
+        <div class="mx-auto text-center lg:col-8">
+          <h1 class="text-4xl font-semibold lg:text-5xl">Blog</h1>
+          <p class="mt-4 text-lg opacity-70">
+            Riflessioni tecniche su Cloud, AI, IoT e Project Management
+          </p>
+        </div>
+      </div>
+
+      {/* Post grid */}
+      <div class="row">
+        <div class="mx-auto lg:col-10">
+          <div class="row g-4">
+            {
+              sortPostByDate
+                .slice(0, pagination)
+                .map((post) => (
+                  <Post className="col-12 sm:col-6" post={post} />
+                ))
+            }
+          </div>
+        </div>
+      </div>
+
+      {/* Pagination */}
+      <div class="mt-12">
+        <Pagination
+          totalPages={Math.ceil(posts.length / pagination)}
+          currentPage={1}
+        />
+      </div>
+
+    </div>
+  </div>
+</Base>

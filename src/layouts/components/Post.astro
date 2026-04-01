@@ -5,8 +5,8 @@ const { post, className } = Astro.props;
 const { id, data } = post;
 ---
 
-<div class={className}>
-  <div class="rounded border border-border p-6 lg:p-9">
+<div class={`${className} flex`}>
+  <div class="flex h-full w-full flex-col rounded border border-border p-6 lg:p-9">
     <ul class="flex items-center space-x-4">
       {
         data.categories.map((category: any) => (
@@ -27,7 +27,7 @@ const { id, data } = post;
       </a>
     </h2>
     <a
-      class="btn-link mt-7 inline-flex items-center hover:text-primary"
+      class="btn-link mt-auto inline-flex items-center pt-7 hover:text-primary"
       href={`/posts/${id}`}>
       Continue Reading
       <svg

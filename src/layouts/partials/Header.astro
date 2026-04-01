@@ -31,24 +31,27 @@ const categories: NavigationLink[] = uniqueCategories.map(
   })
 );
 
-// Constructing combinedMenu
+// Constructing combinedMenu:
+// Home | Blog [+ categorie se su /blog o /categories/*] | Contact
 const combinedMenu: NavigationLink[] = [];
 
-// Adding the first item of main
+// Home
 combinedMenu.push(menu.main[0]);
 
-// Adding all categories
-if (
-  pathname.startsWith(menu.main[0].url) &&
-  !menu.main.slice(1).some((item) => pathname.startsWith(item.url))
-) {
+// Blog + categorie (visibili quando si è nella sezione blog)
+const isBlogSection =
+  pathname === "/blog" ||
+  pathname === "/blog/" ||
+  pathname.startsWith("/categories/");
+
+combinedMenu.push(menu.main[1]); // Blog
+
+if (isBlogSection) {
   combinedMenu.push(...categories);
 }
 
-// Adding the rest of the items from main excluding the first one
-if (!pathname.startsWith("/categories/")) {
-  combinedMenu.push(...menu.main.slice(1));
-}
+// Voci restanti (Contact, ecc.)
+combinedMenu.push(...menu.main.slice(2));
 ---
 
 <header class={`header mt-8 pb-3 pt-12`}>

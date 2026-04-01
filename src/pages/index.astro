@@ -1,19 +1,12 @@
 ---
 import ImageMod from "@/components/ImageMod.astro";
-import Pagination from "@/components/Pagination.astro";
-import Post from "@/components/Post.astro";
 import Social from "@/components/Social.astro";
 import config from "@/config/config.json";
 import social from "@/config/social.json";
 import Base from "@/layouts/Base.astro";
-import { getSinglePage } from "@/lib/contentParser.astro";
-import { sortByDate } from "@/lib/utils/sortFunctions";
 import { markdownify } from "@/lib/utils/textConverter";
 
-const posts = await getSinglePage("posts");
-const { pagination } = config.settings;
 const { name, image, designation, bio } = config.profile;
-const sortPostByDate = sortByDate(posts);
 ---
 
 <Base
@@ -21,11 +14,12 @@ const sortPostByDate = sortByDate(posts);
   description="Technical Project Manager con 12 anni di esperienza in AWS, AI, IoT e PMO. Consegna di progetti Digital Transformation end-to-end con focus su sicurezza e conformità GDPR."
   keywords="AWS Solutions Architect, Technical Project Manager Rome, Terraform IaC, AI Implementation, IoT Edge Computing, PMO Strategy, Agile Delivery, Digital Transformation"
 >
-  {/* profile */}
   <div class="section">
     <div class="container">
       <div class="row">
         <div class="mx-auto text-center lg:col-8">
+
+          {/* Foto profilo */}
           <ImageMod
             class="mx-auto rounded-full"
             src={image}
@@ -35,17 +29,26 @@ const sortPostByDate = sortByDate(posts);
             loading="eager"
             fit="contain"
           />
+
+          {/* Nome */}
           <h1
             set:html={markdownify(name)}
             class="mt-12 text-6xl lg:text-8xl font-semibold"
           />
+
+          {/* Designation */}
           <p
             set:html={markdownify(designation)}
             class="mt-6 text-primary text-xl"
           />
+
+          {/* Bio */}
           <p set:html={markdownify(bio)} class="mt-4 leading-9 text-xl" />
+
+          {/* Social */}
           <Social source={social.main} className="social-icons mt-8" />
-          {/* competenze chiave */}
+
+          {/* Badge competenze */}
           <div class="mt-8 flex flex-wrap justify-center gap-2">
             {["AWS & Terraform", "AI / Computer Vision", "IoT & Edge", "PMO & Agile", "GDPR & Security"].map((skill) => (
               <span class="rounded-full border border-primary/40 px-4 py-1 text-sm text-primary">
@@ -53,30 +56,24 @@ const sortPostByDate = sortByDate(posts);
               </span>
             ))}
           </div>
-        </div>
-      </div>
-    </div>
-  </div>
 
-  {/* posts */}
-  <div class="pt-4">
-    <div class="container">
-      <div class="row">
-        <div class="mx-auto lg:col-10">
-          <div class="row g-4">
-            {
-              sortPostByDate
-                .slice(0, pagination)
-                .map((post) => <Post className="col-12 sm:col-6" post={post} />)
-            }
+          {/* CTA */}
+          <div class="mt-12 flex flex-wrap justify-center gap-4">
+            <a
+              href="/blog"
+              class="btn btn-primary rounded px-8 py-3 text-sm font-medium"
+            >
+              Leggi il Blog →
+            </a>
+            <a
+              href="/contact"
+              class="rounded border border-primary/40 px-8 py-3 text-sm font-medium text-primary transition-colors hover:bg-primary/10"
+            >
+              Contattami
+            </a>
           </div>
+
         </div>
-      </div>
-      <div class="mt-12">
-        <Pagination
-          totalPages={Math.ceil(posts.length / pagination)}
-          currentPage={1}
-        />
       </div>
     </div>
   </div>

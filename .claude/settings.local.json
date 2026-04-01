@@ -1,9 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(dir \"%TEMP%\" /od /b)",
-      "Bash(findstr /i '.jpg .jpeg .png .webp')",
-      "Bash(grep -iE \"\\\\.\\(jpg|jpeg|png|webp\\)$\")"
+      "mcp__Claude_Preview__preview_start",
+      "Bash(taskkill /F /IM node.exe)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:4321/blog)"
     ]
   }
 }

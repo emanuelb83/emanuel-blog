@@ -5,6 +5,7 @@ import theme from "@/config/theme.json";
 import { plainify } from "@/lib/utils/textConverter";
 import Footer from "@/partials/Footer.astro";
 import Header from "@/partials/Header.astro";
+import MobileHeader from "@/components/Header.astro";
 import "@/styles/main.css";
 import { Font } from "astro:assets";
 import { ClientRouter } from "astro:transitions";
@@ -59,6 +60,14 @@ const { title, meta_title, description, image, noindex, canonical, keywords } =
         return <Font cssVariable={cssVar} preload />;
       })
     }
+
+    <!-- DM Serif Display + DM Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
 
     <!-- responsive meta -->
     <meta
@@ -154,7 +163,14 @@ const { title, meta_title, description, image, noindex, canonical, keywords } =
   </head>
   <body>
     <TwSizeIndicator />
-    {!pathname.startsWith("/posts/") && <Header />}
+    <!-- Desktop header (md e superiori) -->
+    <div class="hidden md:block">
+      <Header />
+    </div>
+    <!-- Mobile header (sotto md) -->
+    <div class="md:hidden">
+      <MobileHeader />
+    </div>
     <main id="main-content">
       <slot />
     </main>

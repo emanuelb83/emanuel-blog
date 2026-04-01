@@ -1,0 +1,370 @@
+---
+import menuJson from "@/config/menu.json";
+import { getSinglePage } from "@/lib/contentParser.astro";
+import { slugify } from "@/lib/utils/textConverter";
+
+interface NavLink {
+  label: string;
+  href: string;
+}
+
+const { pathname } = Astro.url;
+
+const posts = await getSinglePage("posts");
+
+const uniqueCategories: string[] = [
+  ...new Set(posts.flatMap((post: any) => post.data.categories)),
+];
+
+// Costruisce i link nello stesso ordine dell'header desktop:
+// 1. "All Posts"
+// 2. Categorie (solo se siamo in home o su una categoria)
+// 3. Voci restanti del menu (Contact, ecc.)
+const isHomePath =
+  pathname === "/" ||
+  pathname === "" ||
+  pathname.startsWith("/categories/");
+
+// Home, Blog, categorie, Contact
+const menuLinks: NavLink[] = [
+  // Home
+  { label: menuJson.main[0].name, href: menuJson.main[0].url },
+
+  // Blog
+  { label: menuJson.main[1].name, href: menuJson.main[1].url },
+
+  // Categorie dinamiche (sempre visibili nel drawer mobile)
+  ...uniqueCategories.map((cat: string) => ({
+    label: cat,
+    href: `/categories/${slugify(cat)}`,
+  })),
+
+  // Voci restanti (Contact, ecc.)
+  ...menuJson.main.slice(2).map((item: { name: string; url: string }) => ({
+    label: item.name,
+    href: item.url,
+  })),
+];
+---
+
+<header class="site-header" id="site-header">
+  <!-- Logo / Iniziali -->
+  <a href="/" class="logo" aria-label="Emanuel Bernardini – Home">
+    <span class="logo-initials">EB</span>
+    <span class="logo-dot"></span>
+  </a>
+
+  <!-- Nav desktop (nascosta su mobile via CSS) -->
+  <nav class="nav-desktop" aria-label="Navigazione principale">
+    <ul>
+      {menuLinks.map((link) => (
+        <li>
+          <a
+            href={link.href}
+            class={`nav-link ${pathname === link.href || pathname === link.href + "/" ? "nav-link--active" : ""}`}
+          >
+            {link.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+
+  <!-- Hamburger mobile -->
+  <button
+    class="hamburger"
+    id="hamburger-btn"
+    aria-label="Apri menu"
+    aria-expanded="false"
+    aria-controls="mobile-menu"
+  >
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+</header>
+
+<!-- Drawer mobile -->
+<div class="mobile-menu" id="mobile-menu" aria-hidden="true">
+  <nav aria-label="Menu mobile">
+    <ul>
+      {menuLinks.map((link) => (
+        <li>
+          <a
+            href={link.href}
+            class={`mobile-link ${pathname === link.href || pathname === link.href + "/" ? "mobile-link--active" : ""}`}
+          >
+            {link.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+</div>
+
+<style>
+  /* ─── Variabili ─────────────────────────────────────── */
+  :root {
+    --navy:       #0d1b2a;
+    --navy-light: #162335;
+    --accent:     #3dffa0;   /* verde menta coerente col tuo tema */
+    --text-muted: rgba(255,255,255,0.55);
+    --header-h:   64px;
+    --transition: 0.25s ease;
+  }
+
+  /* ─── Header ────────────────────────────────────────── */
+  .site-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    height: var(--header-h);
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 clamp(1.25rem, 5vw, 3rem);
+
+    background: var(--navy);
+    border-bottom: 1px solid rgba(61, 255, 160, 0.12);
+
+    /* Sottile shadow verso il basso */
+    box-shadow: 0 2px 24px rgba(0, 0, 0, 0.35);
+
+    /* Scroll: si scurisce leggermente via JS */
+    transition: background var(--transition), box-shadow var(--transition);
+  }
+
+  .site-header.scrolled {
+    background: rgba(13, 27, 42, 0.96);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  /* ─── Logo ──────────────────────────────────────────── */
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    letter-spacing: 0.04em;
+  }
+
+  .logo-initials {
+    font-family: "DM Serif Display", Georgia, serif;
+    font-size: 1.45rem;
+    font-weight: 400;
+    color: #fff;
+    line-height: 1;
+    transition: color var(--transition);
+  }
+
+  .logo:hover .logo-initials {
+    color: var(--accent);
+  }
+
+  /* Piccolo punto accent accanto alle iniziali */
+  .logo-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    flex-shrink: 0;
+    margin-bottom: 2px;
+    transition: transform var(--transition);
+  }
+
+  .logo:hover .logo-dot {
+    transform: scale(1.5);
+  }
+
+  /* ─── Nav Desktop ───────────────────────────────────── */
+  .nav-desktop ul {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .nav-link {
+    font-family: "DM Sans", sans-serif;
+    font-size: 0.875rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    text-decoration: none;
+    position: relative;
+    padding-bottom: 2px;
+    transition: color var(--transition);
+  }
+
+  /* Sottolineatura animata */
+  .nav-link::after {
+    content: "";
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: var(--accent);
+    transition: width 0.3s ease;
+  }
+
+  .nav-link:hover {
+    color: #fff;
+  }
+
+  .nav-link:hover::after {
+    width: 100%;
+  }
+
+  .nav-link--active {
+    color: #fff;
+  }
+
+  .nav-link--active::after {
+    width: 100%;
+  }
+
+  /* ─── Hamburger ─────────────────────────────────────── */
+  .hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 36px;
+    height: 36px;
+    padding: 4px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background var(--transition);
+  }
+
+  .hamburger:hover {
+    background: rgba(255,255,255,0.06);
+  }
+
+  .hamburger span {
+    display: block;
+    height: 2px;
+    border-radius: 2px;
+    background: #fff;
+    transition: transform 0.3s ease, opacity 0.3s ease, width 0.3s ease;
+    transform-origin: center;
+  }
+
+  /* Animazione → X */
+  .hamburger[aria-expanded="true"] span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+  .hamburger[aria-expanded="true"] span:nth-child(2) {
+    opacity: 0;
+    width: 0;
+  }
+  .hamburger[aria-expanded="true"] span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+
+  /* ─── Mobile menu (drawer) ──────────────────────────── */
+  .mobile-menu {
+    position: fixed;
+    top: var(--header-h);
+    left: 0;
+    right: 0;
+    z-index: 99;
+    background: var(--navy-light);
+    border-bottom: 1px solid rgba(61, 255, 160, 0.10);
+    padding: 1.5rem clamp(1.25rem, 5vw, 3rem);
+
+    /* Slide from top */
+    transform: translateY(-100%);
+    opacity: 0;
+    transition: transform 0.3s ease, opacity 0.25s ease;
+    pointer-events: none;
+  }
+
+  .mobile-menu.open {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .mobile-menu ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .mobile-link {
+    display: block;
+    font-family: "DM Sans", sans-serif;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-decoration: none;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    transition: color var(--transition), padding-left var(--transition);
+  }
+
+  .mobile-link:hover {
+    color: var(--accent);
+    padding-left: 0.5rem;
+  }
+
+  .mobile-link--active {
+    color: var(--accent);
+    padding-left: 0.5rem;
+  }
+
+  /* ─── Responsive ─────────────────────────────────────── */
+  @media (max-width: 768px) {
+    .nav-desktop { display: none; }
+    .hamburger   { display: flex; }
+  }
+
+  /* Offset per il body così il contenuto non finisce sotto l'header (solo mobile) */
+  @media (max-width: 768px) {
+    :global(body) {
+      padding-top: var(--header-h);
+    }
+  }
+</style>
+
+<script>
+  // ─── Scroll: aggiunge classe .scrolled ─────────────────
+  const header = document.getElementById("site-header")!;
+
+  window.addEventListener("scroll", () => {
+    header.classList.toggle("scrolled", window.scrollY > 20);
+  }, { passive: true });
+
+  // ─── Hamburger toggle ───────────────────────────────────
+  const btn  = document.getElementById("hamburger-btn")!;
+  const menu = document.getElementById("mobile-menu")!;
+
+  btn.addEventListener("click", () => {
+    const isOpen = btn.getAttribute("aria-expanded") === "true";
+    btn.setAttribute("aria-expanded", String(!isOpen));
+    menu.setAttribute("aria-hidden",  String(isOpen));
+    menu.classList.toggle("open", !isOpen);
+  });
+
+  // Chiudi il menu al click su un link mobile
+  menu.querySelectorAll(".mobile-link").forEach((link) => {
+    link.addEventListener("click", () => {
+      btn.setAttribute("aria-expanded", "false");
+      menu.setAttribute("aria-hidden", "true");
+      menu.classList.remove("open");
+    });
+  });
+</script>
